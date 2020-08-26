@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.whzm.mapper.MatchMapper" >
+  <resultMap id="BaseResultMap" type="com.whzm.pojo.FlowMatch" >
+    <constructor >
+      <idArg column="id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="flow_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="advertise_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="match_status" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="advertiser_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="flower_id" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="match_time" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="is_deleted" jdbcType="INTEGER" javaType="java.lang.Integer" />
+    </constructor>
+  </resultMap>
+
+  <select id="selectMatch" resultMap="BaseResultMap" >
+   select * from flow_match
+   where (flower_id=#{userId}
+   or advertiser_id=#{userId})
+   and match_status=1
+   and is_deleted=0
+  </select>
+
+  <select id="selectByUserIdAndResName" resultMap="BaseResultMap">
+   select fm.id as id,
+   flow_id as flowId,
+   advertise_id as advertiseId,
+   flower_id as flowerId,
+   advertiser_id as advertiserId,
+   match_time as matchTime
+   from resources as r,
+   flow_match as fm,
+   flow_user as fu
+   where flower_id = #{userId}
+   or advertiser_id = #{userId})
+   and (r.id = flow_id or r.id = advertise_id)
+   and r.user_id = fu.id
+   and fm.is_deleted = 0
+   and fm.match_status = 1
+   and r.name like #{resourceName}
+  </select>
+
+  <select id="queryMatchSelected" resultMap="BaseResultMap">
+select fm.advertiser_id aerId,
+fm.flower_id ferId,
+fm.match_time matchTime,
+fu.username userName,
+resources.type type
+from flow_match fm,
+flow_user fu,
+resources
+where
+resources.user_id = fu.id
+and fm.match_status = 1
+and fm.is_deleted=0
+and
+((fm.advertise_id = resources.id
+and fm.advertiser_id =  fu.id)
+or
+(fm.flow_id = resources.id
+and fm.flower_id = fu.id))
+order by match_time desc
+  </select>
+</mapper>

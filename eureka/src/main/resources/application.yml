@@ -1,0 +1,13 @@
+server:
+  port: 8761   #推荐使用，作为服务端eureka端口使用
+
+
+spring:
+  application:
+    name: eureka    #设置所有名称为eureka的为一个集群
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+  server:
+    response-cache-update-interval-ms: 3
